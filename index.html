@@ -28,6 +28,7 @@ a.card{display:block;padding:12px;border:1px solid var(--border);border-radius:1
 <label>出生月<input id="m" type="number" inputmode="numeric" placeholder="1–12" min="1" max="12"></label></div>
 <p class="cap">資料只存在這台裝置的瀏覽器裡。</p></section>
 <section id="prog" class="hide"><h2>目前進度</h2><p class="cap">以 900 個月（75 歲）為一生的估算基準。</p><div class="metrics" id="met"></div></section>
+<section><h2>新增重大事件</h2><form id="af"><div class="row"><label>年（西元）<input id="ay" type="number" inputmode="numeric" placeholder="例如 2026" required></label><label>月<select id="am"><option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option><option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option><option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option><option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option></select></label></div><div class="row"><label>事件內容<input id="at" placeholder="例如：去維也納" required></label></div><div class="row"><button class="primary" type="submit">加入</button></div><p class="cap" id="ae" style="color:#c0392b"></p></form></section>
 <section><h2>900 格</h2><p class="cap">每列 30 格＝2.5 年。紅色＝已過，藍框＝本月，黃色＝已標記；點任一格可寫目標或里程碑。</p><div id="grid"></div></section>
 <section id="ed" class="hide"><h2 id="edh"></h2><div class="row"><label>目標／里程碑<input id="draft" placeholder="例如：去維也納、完成復健療程"></label></div>
 <div class="row"><button class="primary" id="sv">儲存</button><button id="cl">清除這格</button></div></section>
@@ -58,5 +59,11 @@ $("y").value=s.y;$("m").value=s.m;
 $("y").oninput=function(){s.y=this.value;save();};$("m").oninput=function(){s.m=this.value;save();};
 $("sv").onclick=function(){var v=$("draft").value.trim();if(v)s.notes[sel]=v;else delete s.notes[sel];save();};
 $("cl").onclick=function(){$("draft").value="";delete s.notes[sel];save();};
+$("af").onsubmit=function(e){e.preventDefault();var er=$("ae"),by=parseInt(s.y,10),bm=parseInt(s.m,10),y=parseInt($("ay").value,10),m=parseInt($("am").value,10),t=$("at").value.trim();er.textContent="";
+if(!by||!bm||bm<1||bm>12){er.textContent="請先輸入出生年月。";return;}
+if(!y){er.textContent="請輸入年份。";return;}if(!t){er.textContent="請輸入事件內容。";return;}
+var i=(y-by)*12+(m-bm);if(i<0||i>899){er.textContent="這個年月不在 900 格範圍內（出生起算 0–899 個月）。";return;}
+s.notes[i]=s.notes[i]?s.notes[i]+"\n"+t:t;save();$("at").value="";};
+$("ay").value=new Date().getFullYear();$("am").value=new Date().getMonth()+1;
 render();})();
 </script></body></html>
