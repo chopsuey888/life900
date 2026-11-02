@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>人生 900 格</title>
+<style>
+:root{--bg:#fff;--fg:#1a1a1a;--sub:#666;--subtle:#eef0f3;--border:#d8dbe0;--past:#3b82f6;--mark:#f5b400;--now:#e11d48;--focus:#111;--card:#f7f8fa}
+@media(prefers-color-scheme:dark){:root{--bg:#111316;--fg:#eee;--sub:#9aa;--subtle:#23262b;--border:#33373d;--focus:#fff;--card:#1a1d21}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 -apple-system,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif}
+main{max-width:960px;margin:auto;padding:20px 16px 60px}h1{margin:0 0 4px;font-size:28px}h2{font-size:19px;margin:0 0 8px}
+.sum,.cap{color:var(--sub);font-size:14px}section{margin-top:28px}
+.row{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}label{display:flex;flex-direction:column;font-size:13px;color:var(--sub);gap:4px;flex:1;min-width:140px}
+input{font:inherit;padding:8px 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--fg)}
+button{font:inherit;padding:8px 16px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--fg);cursor:pointer}
+button.primary{background:var(--past);border-color:var(--past);color:#fff}
+.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
+.metric{background:var(--card);border-radius:10px;padding:12px}.metric b{font-size:24px;display:block}.metric span{font-size:13px;color:var(--sub)}
+#grid{display:grid;grid-template-columns:repeat(30,1fr);gap:2px;width:100%}
+#grid div{aspect-ratio:1;cursor:pointer;border-radius:2px;background:var(--subtle);outline:1px solid var(--border)}
+#grid .p{background:var(--past)}#grid .m{background:var(--mark)}#grid .s{outline:2px solid var(--focus)}#grid .c{outline:2px solid var(--now);z-index:1}
+@media(max-width:480px){#grid{gap:1px}#grid div{border-radius:1px}}
+.note{cursor:pointer;padding:6px 0;border-bottom:1px solid var(--border);font-size:15px}.note span{color:var(--sub)}
+ol{padding-left:20px}ol li b{display:block}.callout{background:var(--card);border-left:4px solid var(--past);padding:10px 12px;border-radius:6px;font-size:14px;margin:12px 0}
+a.card{display:block;padding:12px;border:1px solid var(--border);border-radius:10px;color:var(--fg);text-decoration:none}a.card small{color:var(--sub);display:block}
+.hide{display:none}
+</style></head><body><main>
+<h1>人生 900 格</h1><p class="sum">以 75 年 × 12 個月 = 900 格畫出一生，每格一個月；看清楚已用掉多少、還剩多少，把目標標在格子上。</p>
+<section><h2>輸入出生年月</h2><div class="row">
+<label>出生年（西元）<input id="y" type="number" inputmode="numeric" placeholder="例如 1985"></label>
+<label>出生月<input id="m" type="number" inputmode="numeric" placeholder="1–12" min="1" max="12"></label></div>
+<p class="cap">資料只存在這台裝置的瀏覽器裡。</p></section>
+<section id="prog" class="hide"><h2>目前進度</h2><p class="cap">以 900 個月（75 歲）為一生的估算基準。</p><div class="metrics" id="met"></div></section>
+<section><h2>900 格</h2><p class="cap">每列 30 格＝2.5 年。藍色＝已過，紅框＝本月，黃色＝已標記；點任一格可寫目標或里程碑。</p><div id="grid"></div></section>
+<section id="ed" class="hide"><h2 id="edh"></h2><div class="row"><label>目標／里程碑<input id="draft" placeholder="例如：去維也納、完成復健療程"></label></div>
+<div class="row"><button class="primary" id="sv">儲存</button><button id="cl">清除這格</button></div></section>
+<section id="nl" class="hide"><h2>我的標記</h2><div id="notes"></div></section>
+<section><h2>怎麼用</h2><ol><li><b>畫出 900 格</b>一格一個月，75 年大約就是 900 格。</li><li><b>塗掉已過的月份</b>看見已用掉的比例，剩下的時間就變得具體。</li><li><b>把重要的事放進格子</b>在未來的格子標上想完成的目標，讓每個月都有方向。</li></ol>
+<div class="callout">影片標題為「為什麼每個人都該認真思考死亡？人生只有900個月！『向死而生』的意義」（魏知超）。這裡的做法是依標題整理的通用版本，未逐字核對影片內容。</div>
+<a class="card" href="https://youtu.be/1hqnFIcBvUk" target="_blank" rel="noopener">人生只有900個月！向死而生的意義<small>YouTube・魏知超啥書都讀</small></a></section>
+</main><script>
+(function(){var T=900,K="life900-v1",s={y:"",m:"",notes:{}},sel=-1;
+try{var r=localStorage.getItem(K);if(r){s=JSON.parse(r);s.notes=s.notes||{};}}catch(e){}
+var $=function(i){return document.getElementById(i)},g=$("grid"),cells=[];
+for(var i=0;i<T;i++){var d=document.createElement("div");d.dataset.i=i;g.appendChild(d);cells.push(d);}
+g.addEventListener("click",function(e){var i=e.target.dataset.i;if(i!=null)pick(+i);});
+function save(){try{localStorage.setItem(K,JSON.stringify(s));}catch(e){}render();}
+function lived(){var y=parseInt(s.y,10),m=parseInt(s.m,10);if(!y||!m||m<1||m>12)return -1;var n=new Date();return Math.max(0,Math.min(T,(n.getFullYear()-y)*12+(n.getMonth()+1-m)));}
+function label(i){var y=parseInt(s.y,10),m=parseInt(s.m,10),a=Math.floor(i/12)+" 歲 "+(i%12)+" 個月";if(!y||!m)return "第 "+(i+1)+" 格（"+a+"）";var t=y*12+(m-1)+i;return "第 "+(i+1)+" 格："+Math.floor(t/12)+" 年 "+(t%12+1)+" 月（"+a+"）";}
+function pick(i){sel=i;$("draft").value=s.notes[i]||"";render();if(innerWidth<700)$("ed").scrollIntoView({behavior:"smooth"});}
+function esc(x){var d=document.createElement("div");d.textContent=x;return d.innerHTML;}
+function render(){var L=lived(),keys=Object.keys(s.notes).map(Number).sort(function(a,b){return a-b});
+cells.forEach(function(c,i){var h=!!s.notes[i];c.className=(h?"m":i<L?"p":"")+(i===L?" c":i===sel?" s":"");c.title=h?s.notes[i]:label(i);});
+$("prog").classList.toggle("hide",L<0);
+if(L>=0)$("met").innerHTML=[[L,"已過的月份"],[T-L,"剩下的月份"],[(L/T*100).toFixed(1)+"%","已用掉"],[keys.length,"已標記的格子"]].map(function(x){return '<div class="metric"><b>'+x[0]+"</b><span>"+x[1]+"</span></div>"}).join("");
+$("ed").classList.toggle("hide",sel<0);if(sel>=0)$("edh").textContent=label(sel);
+$("nl").classList.toggle("hide",!keys.length);
+$("notes").innerHTML=keys.map(function(i){return '<div class="note" data-i="'+i+'"><span>'+esc(label(i))+"　</span>"+esc(s.notes[i])+"</div>"}).join("");}
+$("notes").addEventListener("click",function(e){var n=e.target.closest(".note");if(n)pick(+n.dataset.i);});
+$("y").value=s.y;$("m").value=s.m;
+$("y").oninput=function(){s.y=this.value;save();};$("m").oninput=function(){s.m=this.value;save();};
+$("sv").onclick=function(){var v=$("draft").value.trim();if(v)s.notes[sel]=v;else delete s.notes[sel];save();};
+$("cl").onclick=function(){$("draft").value="";delete s.notes[sel];save();};
+render();})();
+</script></body></html>
