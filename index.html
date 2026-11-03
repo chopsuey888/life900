@@ -22,32 +22,35 @@ ol{padding-left:20px}ol li b{display:block}.callout{background:var(--card);borde
 a.card{display:block;padding:12px;border:1px solid var(--border);border-radius:10px;color:var(--fg);text-decoration:none}a.card small{color:var(--sub);display:block}
 .hide{display:none}
 </style></head><body><main>
-<h1>人生 900 格</h1><p class="sum">以 75 年 × 12 個月 = 900 格畫出一生，每格一個月；看清楚已用掉多少、還剩多少，把目標標在格子上。</p>
+<h1>人生 <span class="tot">900</span> 格</h1><p class="sum">以 <span class="age">75</span> 年 × 12 個月 = <span class="tot">900</span> 格畫出一生，每格一個月；看清楚已用掉多少、還剩多少，把目標標在格子上。</p>
 <section><h2>輸入出生年月</h2><div class="row">
 <label>出生年（西元）<input id="y" type="number" inputmode="numeric" placeholder="例如 1985"></label>
-<label>出生月<input id="m" type="number" inputmode="numeric" placeholder="1–12" min="1" max="12"></label></div>
+<label>出生月<input id="m" type="number" inputmode="numeric" placeholder="1–12" min="1" max="12"></label>
+<label>預期年齡（歲）<input id="ea" type="number" inputmode="numeric" min="1" max="120" placeholder="75"></label></div>
 <p class="cap">資料只存在這台裝置的瀏覽器裡。</p></section>
-<section id="prog" class="hide"><h2>目前進度</h2><p class="cap">以 900 個月（75 歲）為一生的估算基準。</p><div class="metrics" id="met"></div></section>
+<section id="prog" class="hide"><h2>目前進度</h2><p class="cap">以 <span class="tot">900</span> 個月（<span class="age">75</span> 歲）為一生的估算基準。</p><div class="metrics" id="met"></div></section>
 <section><h2>新增重大事件</h2><form id="af"><div class="row"><label>年（西元）<input id="ay" type="number" inputmode="numeric" placeholder="例如 2026" required></label><label>月<select id="am"><option value="1">1 月</option><option value="2">2 月</option><option value="3">3 月</option><option value="4">4 月</option><option value="5">5 月</option><option value="6">6 月</option><option value="7">7 月</option><option value="8">8 月</option><option value="9">9 月</option><option value="10">10 月</option><option value="11">11 月</option><option value="12">12 月</option></select></label></div><div class="row"><label>事件內容<input id="at" placeholder="例如：去維也納" required></label></div><div class="row"><button class="primary" type="submit">加入</button></div><p class="cap" id="ae" style="color:#c0392b"></p></form></section>
-<section><h2>900 格</h2><p class="cap">每列 30 格＝2.5 年。紅色＝已過，藍框＝本月，黃色＝已標記；點任一格可寫目標或里程碑。</p><div id="grid"></div></section>
+<section><h2><span class="tot">900</span> 格</h2><p class="cap">每列 30 格＝2.5 年，共 <span id="rows">30</span> 列。紅色＝已過，藍框＝本月，黃色＝已標記；點任一格可寫目標或里程碑。</p><div id="grid"></div></section>
 <section id="ed" class="hide"><h2 id="edh"></h2><div class="row"><label>目標／里程碑<input id="draft" placeholder="例如：去維也納、完成復健療程"></label></div>
 <div class="row"><button class="primary" id="sv">儲存</button><button id="cl">清除這格</button></div></section>
 <section id="nl" class="hide"><h2>我的標記</h2><div id="notes"></div></section>
-<section><h2>怎麼用</h2><ol><li><b>畫出 900 格</b>一格一個月，75 年大約就是 900 格。</li><li><b>塗掉已過的月份</b>看見已用掉的比例，剩下的時間就變得具體。</li><li><b>把重要的事放進格子</b>在未來的格子標上想完成的目標，讓每個月都有方向。</li></ol>
+<section><h2>怎麼用</h2><ol><li><b>畫出 <span class="tot">900</span> 格</b>一格一個月，<span class="age">75</span> 年就是 <span class="tot">900</span> 格。</li><li><b>塗掉已過的月份</b>看見已用掉的比例，剩下的時間就變得具體。</li><li><b>把重要的事放進格子</b>在未來的格子標上想完成的目標，讓每個月都有方向。</li></ol>
 <div class="callout">影片標題為「為什麼每個人都該認真思考死亡？人生只有900個月！『向死而生』的意義」（魏知超）。這裡的做法是依標題整理的通用版本，未逐字核對影片內容。</div>
 <a class="card" href="https://youtu.be/1hqnFIcBvUk" target="_blank" rel="noopener">人生只有900個月！向死而生的意義<small>YouTube・魏知超啥書都讀</small></a></section>
 </main><script>
-(function(){var T=900,K="life900-v1",s={y:"",m:"",notes:{}},sel=-1;
+(function(){var T=900,K="life900-v1",s={y:"",m:"",age:75,notes:{}},sel=-1;
 try{var r=localStorage.getItem(K);if(r){s=JSON.parse(r);s.notes=s.notes||{};}}catch(e){}
+function A(){var a=parseInt(s.age,10);return a>=1&&a<=120?a:75;}
 var $=function(i){return document.getElementById(i)},g=$("grid"),cells=[];
-for(var i=0;i<T;i++){var d=document.createElement("div");d.dataset.i=i;g.appendChild(d);cells.push(d);}
+function build(){T=A()*12;if(cells.length===T)return;g.innerHTML="";cells=[];for(var i=0;i<T;i++){var d=document.createElement("div");d.dataset.i=i;g.appendChild(d);cells.push(d);}if(sel>=T)sel=-1;
+document.querySelectorAll(".tot").forEach(function(e){e.textContent=T});document.querySelectorAll(".age").forEach(function(e){e.textContent=A()});$("rows").textContent=Math.ceil(T/30);document.title="人生 "+T+" 格";}
 g.addEventListener("click",function(e){var i=e.target.dataset.i;if(i!=null)pick(+i);});
 function save(){try{localStorage.setItem(K,JSON.stringify(s));}catch(e){}render();}
 function lived(){var y=parseInt(s.y,10),m=parseInt(s.m,10);if(!y||!m||m<1||m>12)return -1;var n=new Date();return Math.max(0,Math.min(T,(n.getFullYear()-y)*12+(n.getMonth()+1-m)));}
 function label(i){var y=parseInt(s.y,10),m=parseInt(s.m,10),a=Math.floor(i/12)+" 歲 "+(i%12)+" 個月";if(!y||!m)return "第 "+(i+1)+" 格（"+a+"）";var t=y*12+(m-1)+i;return "第 "+(i+1)+" 格："+Math.floor(t/12)+" 年 "+(t%12+1)+" 月（"+a+"）";}
 function pick(i){sel=i;$("draft").value=s.notes[i]||"";render();if(innerWidth<700)$("ed").scrollIntoView({behavior:"smooth"});}
 function esc(x){var d=document.createElement("div");d.textContent=x;return d.innerHTML;}
-function render(){var L=lived(),keys=Object.keys(s.notes).map(Number).sort(function(a,b){return a-b});
+function render(){build();var L=lived(),keys=Object.keys(s.notes).map(Number).sort(function(a,b){return a-b});
 cells.forEach(function(c,i){var h=!!s.notes[i];c.className=(h?"m":i<L?"p":"")+(i===L?" c":i===sel?" s":"");c.title=h?s.notes[i]:label(i);});
 $("prog").classList.toggle("hide",L<0);
 if(L>=0)$("met").innerHTML=[[L,"已過的月份"],[T-L,"剩下的月份"],[(L/T*100).toFixed(1)+"%","已用掉"],[keys.length,"已標記的格子"]].map(function(x){return '<div class="metric"><b>'+x[0]+"</b><span>"+x[1]+"</span></div>"}).join("");
@@ -55,14 +58,15 @@ $("ed").classList.toggle("hide",sel<0);if(sel>=0)$("edh").textContent=label(sel)
 $("nl").classList.toggle("hide",!keys.length);
 $("notes").innerHTML=keys.map(function(i){return '<div class="note" data-i="'+i+'"><span>'+esc(label(i))+"　</span>"+esc(s.notes[i])+"</div>"}).join("");}
 $("notes").addEventListener("click",function(e){var n=e.target.closest(".note");if(n)pick(+n.dataset.i);});
-$("y").value=s.y;$("m").value=s.m;
+$("y").value=s.y;$("m").value=s.m;$("ea").value=A();
+$("ea").oninput=function(){var a=parseInt(this.value,10);if(a>=1&&a<=120){s.age=a;save();}};
 $("y").oninput=function(){s.y=this.value;save();};$("m").oninput=function(){s.m=this.value;save();};
 $("sv").onclick=function(){var v=$("draft").value.trim();if(v)s.notes[sel]=v;else delete s.notes[sel];save();};
 $("cl").onclick=function(){$("draft").value="";delete s.notes[sel];save();};
 $("af").onsubmit=function(e){e.preventDefault();var er=$("ae"),by=parseInt(s.y,10),bm=parseInt(s.m,10),y=parseInt($("ay").value,10),m=parseInt($("am").value,10),t=$("at").value.trim();er.textContent="";
 if(!by||!bm||bm<1||bm>12){er.textContent="請先輸入出生年月。";return;}
 if(!y){er.textContent="請輸入年份。";return;}if(!t){er.textContent="請輸入事件內容。";return;}
-var i=(y-by)*12+(m-bm);if(i<0||i>899){er.textContent="這個年月不在 900 格範圍內（出生起算 0–899 個月）。";return;}
+var i=(y-by)*12+(m-bm);if(i<0||i>T-1){er.textContent="這個年月不在 "+T+" 格範圍內（出生起算 0–"+(T-1)+" 個月）。";return;}
 s.notes[i]=s.notes[i]?s.notes[i]+"\n"+t:t;save();$("at").value="";};
 $("ay").value=new Date().getFullYear();$("am").value=new Date().getMonth()+1;
 render();})();
